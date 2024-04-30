@@ -1,30 +1,59 @@
 package main
 
 import (
-    "fmt"
     "net/http"
     "io"
     "os"
+    "log"
+    "encoding/base64"
+    "database/sql"
+    "strings"
+    _ "github.com/lib/pq"
 )
 
-func hello(w http.ResponseWriter, req *http.Request) {
-    fmt.Fprintf(w, "hello\n")
-}
-
-func headers(w http.ResponseWriter, req *http.Request) {
-    //go func(req *http.Request) {
-        io.Copy(os.Stdout, req.Body)
-    //}(req)
-    for name, headers := range req.Header {
-        for _, h := range headers {
-            fmt.Printf("%v: %v\n", name, h)
-        }
+func save(w http.ResponseWriter, req *http.Request, db *sql.DB) error {
+    bytes, err := io.ReadAll(req.Body)
+    if err != nil {
+        return err
     }
+
+    bs := new(strings.Builder)
+    be := base64.NewEncoder(base64.StdEncoding, bs)
+    be.Write(bytes)
+    be.Close()
+
+    if _, err := db.Exec("INSERT INTO dom (url, data) VALUES ($1, decode($2, 'base64'));", req.PathValue("name"), bs.String()); err != nil {
+        return err
+    }
+
+    return nil
+
 }
 
 func main() {
-    http.HandleFunc("/hello", hello)
-    http.HandleFunc("/headers", headers)
+    dbURL, dbURLSet := os.LookupEnv("DBURL")
+    if !dbURLSet {
+        dbURL = "sslmode=disable dbname=passiveScrapes"
+    }
 
-    http.ListenAndServe(":10000", nil)
+    db, err := sql.Open("postgres", dbURL)
+    if err != nil {
+        log.Fatalln(err)
+    }
+    defer db.Close()
+
+    if err := db.Ping(); err != nil {
+        log.Fatalln(err)
+    }
+
+    http.HandleFunc("POST /save/{name...}",
+    func(w http.ResponseWriter, req *http.Request) {
+        if err := save(w, req, db); err != nil {
+            http.Error(w, err.Error(), 500)
+            log.Print(err)
+        }
+    })
+
+    log.Print("Ready to serve")
+    log.Fatal(http.ListenAndServe(":10000", nil))
 }
