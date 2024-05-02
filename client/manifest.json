@@ -1,15 +1,19 @@
 {
-  "manifest_version": 2,
-  "name": "Passive scrape",
-  "version": "1.0",
+    "manifest_version": 2,
+    "name": "Passive scrape",
+    "version": "1.0",
 
-  "description": "Passively scrapes webpages.",
+    "description": "Passively scrapes webpages.",
 
-  "content_scripts": [
-    {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["borderify.js"]
+    "permissions": ["webNavigation", "menus", "activeTab"],
+
+    "background": {
+        "page": "index.html",
+        "persistent": true
+    },
+
+    "browser_action": {
+        "default_title": "Passive scrape"
     }
-  ]
-}
 
+}
