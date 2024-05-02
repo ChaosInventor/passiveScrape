@@ -11,7 +11,7 @@ import (
     _ "github.com/lib/pq"
 )
 
-func save(w http.ResponseWriter, req *http.Request, db *sql.DB) error {
+func save(_ http.ResponseWriter, req *http.Request, db *sql.DB) error {
     bytes, err := io.ReadAll(req.Body)
     if err != nil {
         return err
@@ -30,7 +30,7 @@ func save(w http.ResponseWriter, req *http.Request, db *sql.DB) error {
 
 }
 
-func main() {
+func connectDB() (*sql.DB, error) {
     dbURL, dbURLSet := os.LookupEnv("DBURL")
     if !dbURLSet {
         dbURL = "sslmode=disable dbname=passiveScrapes"
@@ -38,13 +38,23 @@ func main() {
 
     db, err := sql.Open("postgres", dbURL)
     if err != nil {
-        log.Fatalln(err)
+        return nil, err
     }
-    defer db.Close()
 
     if err := db.Ping(); err != nil {
-        log.Fatalln(err)
+        return nil, err
     }
+
+    return db, nil
+
+}
+
+func main() {
+    db, err := connectDB()
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
 
     http.HandleFunc("POST /save/{name...}",
     func(w http.ResponseWriter, req *http.Request) {
