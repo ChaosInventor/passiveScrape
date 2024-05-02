@@ -8,12 +8,13 @@
     "permissions": ["webNavigation", "menus", "activeTab"],
 
     "background": {
-        "page": "index.html",
+        "scripts": ["index.js"],
         "persistent": true
     },
 
     "browser_action": {
-        "default_title": "Passive scrape"
+        "default_title": "Passive scrape",
+        "default_popup": "popup.html"
     }
 
 }
