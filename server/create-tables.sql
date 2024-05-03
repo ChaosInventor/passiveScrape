@@ -13,4 +13,5 @@ CREATE TABLE IF NOT EXISTS trackingInterval (
     url     text        REFERENCES tracked(url),
     since   timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     until   timestamp
+    CONSTRAINT valid_time_interval CHECK(until > since)
 );
