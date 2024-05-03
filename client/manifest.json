@@ -5,7 +5,13 @@
 
     "description": "Passively scrapes webpages.",
 
-    "permissions": ["webNavigation", "menus", "activeTab"],
+    "permissions":
+    [
+        "webNavigation",
+        "menus",
+        "activeTab",
+        "<all_urls>"
+    ],
 
     "background": {
         "scripts": ["index.js"],
