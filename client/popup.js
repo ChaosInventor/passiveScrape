@@ -10,6 +10,8 @@ function updatePage(trackedURLs) {
     }
 }
 
+//TODO: Button for reloading tracked urls
+
 const trackedURLsChangePort = browser.runtime.connect(
     { name: "trackedURLsChange" }
 )

@@ -10,6 +10,7 @@
         "webNavigation",
         "menus",
         "activeTab",
+        "tabs",
         "<all_urls>"
     ],
 
