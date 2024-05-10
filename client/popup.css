@@ -1,0 +1,24 @@
+#trackedURLs {
+    width: 100%;
+}
+
+.urlItem {
+    display: flex;
+    flex-flow: row;
+}
+
+.urlName {
+    width: 88%;
+    margin-top: 0;
+    margin-right: 2%;
+    margin-bottom: 2%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.urlButton {
+    width: 10%;
+    margin-left: 2%;
+}
+

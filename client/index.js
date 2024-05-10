@@ -155,6 +155,30 @@ browser.runtime.onInstalled.addListener(() => {
             }
         })
 
+        const URLsChangedPorts = new Set()
+        browser.runtime.onConnect.addListener(port => {
+            switch(port.name) {
+                case "trackedURLsChange":
+                    URLsChangedPorts.add(port)
+                    port.onDisconnect.addListener(
+                        port => URLsChangedPorts.delete(port)
+                    )
+                    port.postMessage({ val: trackedURLs })
+                    break
+                case "trackURL":
+                    port.onMessage.addListener(
+                        details => trackedURLs.add(details.url)
+                    )
+                    break
+                case "untrackURL":
+                    port.onMessage.addListener(
+                        details => trackedURLs.delete(details.url)
+                    )
+                    break
+                default:
+                    showError("Unknown connection name", port.name)
+            }
+
         browser.menus.onClicked.addListener(async (info, tab) => {
             switch(info.menuItemId) {
                 case "trackURL":
@@ -210,22 +234,7 @@ browser.runtime.onInstalled.addListener(() => {
                             ).catch(showError)
                     })
             })
-
-        const URLsChangedPorts = new Set()
-        browser.runtime.onConnect.addListener(port => {
-            switch(port.name) {
-                case "trackedURLsChange":
-                    URLsChangedPorts.add(port)
-                    port.onDisconnect.addListener(
-                        port => URLsChangedPorts.delete(port)
-                    )
-                    port.postMessage({ val: trackedURLs })
-                    break;
-                default:
-                    showError("Unknown connection name", port.name)
-            }
         })
-
     })
 
     browser.menus.create({
