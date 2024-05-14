@@ -212,7 +212,7 @@ browser.runtime.onInstalled.addListener(() => {
             }
         })
 
-        browser.tabs.query({})
+        browser.tabs.query({}) //FIXME: Not doing what it's meant to
             .then(tabs => {
                 for(const tab of tabs)
                     if(trackedURLs.has(tab.url))
