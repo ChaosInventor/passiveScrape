@@ -1,4 +1,4 @@
-module private/scraper
+module private/passiveScrapeHTTPServer
 
 go 1.22.1
 
