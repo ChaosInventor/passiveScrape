@@ -57,14 +57,7 @@ async function saveURLData(url, data) {
         })
 }
 
-browser.runtime.onMessage.addListener(
-    (message, sender, sendResponse) => {
-        if(message.type === "sendHTML")
-            saveURLData(sender.tab.url, message.data)
-        else showError("Unknown message type", message)
-    })
-
-browser.runtime.onInstalled.addListener(() => {
+function startup() {
     getTrackedURLs().then(trackedURLs => {
         console.log(trackedURLs)
 
@@ -252,4 +245,15 @@ browser.runtime.onInstalled.addListener(() => {
         title: "Scrape this URL",
         contexts: ["page"],
     }, onMenuCreated);
-});
+}
+
+browser.runtime.onMessage.addListener(
+    (message, sender, sendResponse) => {
+        if(message.type === "sendHTML")
+            saveURLData(sender.tab.url, message.data)
+        else showError("Unknown message type", message)
+    })
+
+browser.runtime.onInstalled.addListener(startup)
+
+browser.runtime.onStartup.addListener(startup)
