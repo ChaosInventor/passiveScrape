@@ -1,4 +1,4 @@
-module private/passiveScrapeHTTPServer
+module github.com/ChaosInventor/passiveScrape
 
 go 1.22.1
 
